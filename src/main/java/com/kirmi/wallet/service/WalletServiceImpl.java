@@ -9,6 +9,7 @@ import com.kirmi.wallet.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.http.HttpStatus;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Retryable(value = Throwable.class, exclude = {MyApplicationException.class})
     public WalletResponseDto updateWallet(WalletRequestDto dto) {
         Wallet wallet = walletRepository.findById(dto.getId())
                 .orElseThrow(() -> new MyApplicationException("Кошелёк не найден", HttpStatus.BAD_REQUEST));
@@ -47,6 +49,8 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
+    @Transactional
+    @Retryable(value = Throwable.class, exclude = {MyApplicationException.class})
     public WalletResponseDto getBalance(UUID id) {
         Wallet wallet = walletRepository.findById(id)
                 .orElseThrow(() -> new MyApplicationException("Кошелёк не найден", HttpStatus.BAD_REQUEST));
