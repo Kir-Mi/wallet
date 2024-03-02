@@ -40,8 +40,7 @@ public class WalletServiceImpl implements WalletService {
                     balance -= amount;
                 }
             }
-            default ->
-                    throw new MyApplicationException("Доступны операции DEPOSIT и WITHDRAW", HttpStatus.BAD_REQUEST);
+            default -> throw new MyApplicationException("Доступны операции DEPOSIT и WITHDRAW", HttpStatus.BAD_REQUEST);
         }
         wallet.setBalance(balance);
         walletRepository.save(wallet);
